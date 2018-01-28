@@ -1,9 +1,9 @@
 package com.example.pablo.perrsa_admin;
 
-import android.app.ListActivity;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -20,23 +20,31 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends ListActivity {
+public class MainActivity extends AppCompatActivity {
 
     ListView listViewPedidos;
-    List<String> pedidos;
+    List<Pedido> pedidos;
+    List<String> pedidosString;
 
     private DatabaseReference mDatabase;
     private Button button;
     private ArrayAdapter<String> adapter;
+
+    AlertDialog.Builder builder;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.fragment_lista_pedidos);
         mDatabase = FirebaseDatabase.getInstance().getReference("pedidos");
-        pedidos = new ArrayList<String>();
 
+        pedidos = new ArrayList<Pedido>();
+        pedidosString = new ArrayList<String>();
 
-        listViewPedidos = getListView();
+        builder = new AlertDialog.Builder(this);
+
+        listViewPedidos = findViewById(R.id.listview);
 
         mDatabase.addValueEventListener(new ValueEventListener() {
             @Override
@@ -48,17 +56,18 @@ public class MainActivity extends ListActivity {
                 //iterating through all the nodes
                 for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
                     //getting artist
-                    String pedido = postSnapshot.getValue(Pedido.class).toString();
+                    Pedido pedido = postSnapshot.getValue(Pedido.class);
+                    String pedidoString = pedido.toString() + " " + pedido.getProductosString();
                     //adding artist to the list
                     pedidos.add(pedido);
+                    pedidosString.add(pedidoString);
                 }
 
                 //creating adapter
-                adapter=new ArrayAdapter<String>(getApplicationContext() ,android.R.layout.simple_list_item_1 ,pedidos);
+                adapter=new ArrayAdapter<String>(getApplicationContext() ,android.R.layout.simple_list_item_1 ,pedidosString);
 //                PedidosList pedidosList = new PedidosList(getActivity(), pedidos);
                 //attaching adapter to the listview
                 listViewPedidos.setAdapter(adapter);
-                setListAdapter(adapter);
 
 
 
@@ -70,17 +79,15 @@ public class MainActivity extends ListActivity {
             }
         });
 
-        setListAdapter(adapter);
-        listViewPedidos = getListView();
-
         listViewPedidos.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, final View view, final int position, long id) {
-                AlertDialog.Builder builder = new AlertDialog.Builder(getApplication());
+
                 builder.setMessage("¿Borrar éste pedido?")
                         .setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int id) {
-                               String pedido = pedidos.get(position);
+                               String pedido = pedidosString.get(position);
+                               pedidosString.remove(pedido);
                                pedidos.remove(pedido);
                                adapter.notifyDataSetChanged();
                                dialog.dismiss();
@@ -91,35 +98,14 @@ public class MainActivity extends ListActivity {
                                 dialog.dismiss();
                             }
                         });
+                AlertDialog dialog = builder.create();
+                dialog.show();
 
                 return true;
             }
         });
 
-        listViewPedidos = getListView();
 
-        listViewPedidos.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, final int position, long id) {
-                AlertDialog.Builder builder = new AlertDialog.Builder(getApplication());
-                builder.setMessage("¿Borrar éste pedido?")
-                        .setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int id) {
-                                String pedido = pedidos.get(position);
-                                pedidos.remove(pedido);
-                                adapter.notifyDataSetChanged();
-                                dialog.dismiss();
-                            }
-                        })
-                        .setNegativeButton("cancelar", new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int id) {
-                                dialog.dismiss();
-                            }
-                        });
-
-
-            }
-        });
 
     }
 

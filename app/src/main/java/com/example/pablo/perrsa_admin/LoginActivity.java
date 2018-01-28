@@ -208,6 +208,12 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             cancel = true;
         }
 
+        if(mEmailView.getText().toString().contains("repart")){
+            Toast.makeText(this, "Aplicacion sólo de administrador", Toast.LENGTH_SHORT).show();
+            cancel = true;
+            return;
+        }
+
         // Check for a valid email address.
         if (TextUtils.isEmpty(email)) {
             mEmailView.setError(getString(R.string.error_field_required));

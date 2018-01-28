@@ -46,6 +46,11 @@ public class ProductoItem implements Serializable{
     }
 
     @Override
+    public String toString() {
+        return title + ": " +  quantity;
+    }
+
+    @Override
     public boolean equals(Object obj) {
         if(obj == null)
             return false;
