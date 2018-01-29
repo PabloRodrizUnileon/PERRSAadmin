@@ -12,7 +12,7 @@ public class Pedido implements Serializable {
     private Map<String, ProductoItem> productos;
     private String productosString;
     private String ordenante, pueblo, direccion, fecha_pedido, hora_pedido;
-    private String pushId;
+    private String pushId, userId;
 
     public Pedido() {
 
@@ -25,6 +25,14 @@ public class Pedido implements Serializable {
         this.fecha_pedido = fecha_pedido;
         this.hora_pedido = hora_pedido;
         this.productos = items;
+    }
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 
     public String getPushId() {
@@ -93,7 +101,7 @@ public class Pedido implements Serializable {
 //        }
 
         for (Map.Entry<String, ProductoItem> productoItemEntry : productos.entrySet()) {
-            result = result + productoItemEntry.getValue().toString() + " - ";
+            result = result + productoItemEntry.getValue().toString() + " | ";
         }
         return result;
     }
@@ -104,8 +112,15 @@ public class Pedido implements Serializable {
 
     @Override
     public String toString() {
-        String result = "Ordenante: " +ordenante + "; Dirección:" + pueblo + " " + direccion + "; Productos" + getProductosString();
-        result.substring(result.length() - 1).replace("-", "");
+        String result = "Ordenante: " +ordenante + ";   Dirección:" + pueblo + ", " + direccion + ";   Productos: " + getProductosString();
+        return result;
+    }
+
+    public String getPedidoDetailString(){
+        String result = "Ordenante: " +ordenante
+                + "\n Dirección:" + pueblo + " " + direccion
+                + "\n Fecha:" + fecha_pedido + "-" + hora_pedido
+                + "\n Productos: " + getProductosString();
         return result;
     }
 }

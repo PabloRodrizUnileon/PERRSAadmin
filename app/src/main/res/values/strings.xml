@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">PERRSA-v1.0.0</string>
+    <string name="app_name">PERRSA-Admin</string>
     <string name="action_logout">Deslogear</string>
     <string name="section_format">Hello World from section: %1$d</string>
 
