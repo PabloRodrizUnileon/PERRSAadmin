@@ -1,123 +1,58 @@
 package com.example.pablo.perrsa_admin;
 
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.app.AlertDialog;
+import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
+import android.view.View;
+import android.support.design.widget.NavigationView;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.ListView;
 
-import com.example.pablo.perrsa_admin.Objetos.Pedido;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 
-import java.util.ArrayList;
-import java.util.List;
-
-public class MainActivity extends AppCompatActivity {
-
-    ListView listViewPedidos;
-    List<Pedido> pedidos;
-    List<String> pedidosString;
-
-    private DatabaseReference mDatabasePedidos;
-    private DatabaseReference mDatabaseUsuarios;
-    private Button button;
-    private ArrayAdapter<String> adapter;
-
-    AlertDialog.Builder builder;
-
+public class MainActivity extends AppCompatActivity
+        implements NavigationView.OnNavigationItemSelectedListener {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.fragment_lista_pedidos);
+        setContentView(R.layout.activity_main);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
 
-
-        mDatabasePedidos = FirebaseDatabase.getInstance().getReference("pedidos");
-        mDatabaseUsuarios = FirebaseDatabase.getInstance().getReference("users");
-
-        pedidos = new ArrayList<Pedido>();
-        pedidosString = new ArrayList<String>();
-
-        builder = new AlertDialog.Builder(this);
-
-        listViewPedidos = findViewById(R.id.listview);
-
-        mDatabasePedidos.addValueEventListener(new ValueEventListener() {
+        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        fab.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-
-                //clearing the previous artist list
-                pedidos.clear();
-                pedidosString.clear();
-
-                //iterating through all the nodes
-                for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
-                    //getting artist
-                    Pedido pedido = postSnapshot.getValue(Pedido.class);
-                    String pedidoString = pedido.toString();
-                    //adding artist to the list
-                    pedidos.add(pedido);
-                    pedidosString.add(pedidoString);
-                }
-
-                //creating adapter
-                adapter = new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_list_item_1, pedidosString);
-//                PedidosList pedidosList = new PedidosList(getActivity(), pedidos);
-                //attaching adapter to the listview
-                listViewPedidos.setAdapter(adapter);
-
-
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
+            public void onClick(View view) {
+                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+                        .setAction("Action", null).show();
             }
         });
 
-        listViewPedidos.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-            @Override
-            public boolean onItemLongClick(AdapterView<?> parent, final View view, final int position, long id) {
-                builder.setTitle("¿Desea borrar éste pedido?");
-                builder.setMessage(pedidos.get(position).getPedidoDetailString())
-                        .setPositiveButton("Aceptar", (dialog, id1) -> {
-                            String pedidoString = pedidosString.get(position);
-                            Pedido pedido = pedidos.get(position);
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        drawer.addDrawerListener(toggle);
+        toggle.syncState();
 
-                            pedidosString.remove(pedidoString);
-                            pedidos.remove(pedido);
-                            mDatabaseUsuarios.child(pedido.getUserId()).child("pedidos").child(pedido.getPushId()).removeValue();
-                            mDatabasePedidos.child(pedido.getPushId()).removeValue();
+        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(this);
+    }
 
-
-                            adapter.notifyDataSetChanged();
-                            dialog.dismiss();
-                        })
-                        .setNegativeButton("cancelar", new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int id) {
-                                dialog.dismiss();
-                            }
-                        });
-                AlertDialog dialog = builder.create();
-                dialog.show();
-
-                return true;
-            }
-        });
-
-
+    @Override
+    public void onBackPressed() {
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        if (drawer.isDrawerOpen(GravityCompat.START)) {
+            drawer.closeDrawer(GravityCompat.START);
+        } else {
+            super.onBackPressed();
+        }
     }
 
     @Override
@@ -144,5 +79,20 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    @SuppressWarnings("StatementWithEmptyBody")
+    @Override
+    public boolean onNavigationItemSelected(MenuItem item) {
+        // Handle navigation view item clicks here.
+        int id = item.getItemId();
 
+        if (id == R.id.pedidos) {
+            // Handle the camera action
+        } else if (id == R.id.productos) {
+
+        }
+
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        drawer.closeDrawer(GravityCompat.START);
+        return true;
+    }
 }
